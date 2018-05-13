@@ -37,11 +37,13 @@ console.log(v4);
 let acc = new Account();
 acc = acc.fromKey(v4, PASS, true);
 
-neb.api.getAccountState(MY_ADDRESS).then(function (state) {
-    console.log(state);
-}).catch(function (err) {
-    console.log(err);
-});
+// neb.api.getAccountState(MY_ADDRESS).then(function (state) {
+//     console.log(state);
+//     const contract = {};
+//     submitContract(contract, state.nonce)
+// }).catch(function (err) {
+//     console.log(err);
+// });
 
 AWS.config.update(
     {
@@ -287,19 +289,13 @@ if (cluster.isMaster) {
     var case_route = require('./routes/case');
     app.get('/SubscribeTrades', case_route.SubscribeTrades);
 
-    neb.api.getAccountState(MY_ADDRESS).then(function (state) {
-        console.log(state);
-    }).catch(function (err) {
-        console.log(err);
-    });
-
     function submitContract(contract, nonce) {
         console.log(contract, nonce);
-        const Transaction = Nebulas.Transaction;
+        const Transaction = nebulas.Transaction;
         const tx = new Transaction({
-            chainID: 1,
+            chainID: 1001,
             from: acc,
-            to: CONTRACT_ADDRESS,
+            to: contractAddress,
             value: 0,
             nonce: parseInt(nonce) + 1,
             gasPrice: 1000000,
@@ -315,11 +311,6 @@ if (cluster.isMaster) {
         console.log("hash:" + txHash);
         console.log("sign:" + tx.sign.toString("hex"));
         console.log(tx.toString());
-        const data = tx.toProtoString();
-        console.log(data);
-        tx.fromProto(data);
-        console.log(tx.toString());
-        console.log("address:" + tx.from.getAddressString());
         return txHash;
     }
 

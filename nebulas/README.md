@@ -18,6 +18,13 @@ like the following. Submit a post request to `/Contract` with this body.
 }
 </pre>
 
+#### To view smart contract code:
+
+open `web-wallet/index.html`
+
+Contract deployed:
+tx hash: 9152ea8a20dd3bf4fb1ce7253a9b528cc9babbf3e9c05b09b9d236cf190ab4e8
+
 #### Useful Links
 
 * https://www.reddit.com/r/nebulas/comments/8fi47r/nebulas_developers_questions_and_support_resources/
