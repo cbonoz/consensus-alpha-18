@@ -29,7 +29,7 @@ const neb = new Neb();
 neb.setRequest(new Nebulas.HttpRequest("https://testnet.nebulas.io"));
 
 const PASS = process.env.NEB_WALLET || 'testing123';
-const CONTRACT_ADDRESS = "";
+const CONTRACT_ADDRESS = "n21HfxpxAx3usVXHUGygo6J9XPxFZJCN5uJ";
 
 const MY_ADDRESS = "n1WJ8UCirPdMmLMYiuemHuUp9xftqkunQCu";
 const v4 = JSON.parse(fs.readFileSync(`./${MY_ADDRESS}.json`));
@@ -304,7 +304,7 @@ if (cluster.isMaster) {
             gasPrice: 1000000,
             gasLimit: 2000000,
             contract: {
-                function: "saveContract",
+                function: "saveItem",
                 args: `[${JSON.stringify(contract)}]`
             }
         });

@@ -5,12 +5,6 @@
 
 "use strict";
 
-var Nebulas = require("./neb.js/index");
-
-var Neb = Nebulas.Neb;
-var neb = new Neb();
-neb.setRequest(new Nebulas.HttpRequest("https://testnet.nebulas.io"));
-
 // Created by the client application.
 // {
 // "symbol": "CRDUSD, // commodity symbol.
@@ -53,7 +47,7 @@ ContractItem.prototype = {
     }
 };
 
-var ContractRepository = function () {
+const ContractRepository = function () {
     LocalContractStorage.defineMapProperty(this, "repo", {
         parse: function (text) {
             return new ContractItem(text);
