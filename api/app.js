@@ -28,6 +28,8 @@ const Neb = Nebulas.Neb;
 const neb = new Neb();
 neb.setRequest(new Nebulas.HttpRequest("https://testnet.nebulas.io"));
 
+const api = neb.api;
+
 const PASS = process.env.NEB_WALLET || 'testing123';
 const CONTRACT_ADDRESS = "n21HfxpxAx3usVXHUGygo6J9XPxFZJCN5uJ";
 
@@ -289,7 +291,7 @@ if (cluster.isMaster) {
     var case_route = require('./routes/case');
     app.get('/SubscribeTrades', case_route.SubscribeTrades);
 
-    function submitContract(contract, nonce) {
+    function submitContract(contract, nonce, cb) {
         console.log(contract, nonce);
         const Transaction = Nebulas.Transaction;
         const tx = new Transaction({
@@ -311,7 +313,7 @@ if (cluster.isMaster) {
         console.log("hash:" + txHash);
         console.log("sign:" + tx.sign.toString("hex"));
         console.log(tx.toString());
-        return txHash;
+        api.sendRawTransaction( {data: tx.toProtoString()} ).then(cb);
     }
 
     app.post('/Contract', function (req, res, next) {
@@ -321,9 +323,12 @@ if (cluster.isMaster) {
         // sio.github.io/neb.js/Transaction.html
 
         neb.api.getAccountState(MY_ADDRESS).then(function (state) {
-            const txHash = submitContract(contract, state.nonce);
-            console.log(state);
-            return res.status(200).json({tx: txHash, success: 1});
+            const hash = submitContract(contract, state.nonce, function(txHash) {
+                console.log(state);
+                return res.status(200).json({tx: txHash, success: 1});
+            });
+
+            return res.status(200).json({tx: hash, success: 1});
         }).catch(function (err) {
             console.log(err);
             return res.status(500).json(err);
