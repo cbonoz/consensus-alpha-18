@@ -37,11 +37,13 @@ console.log(v4);
 let acc = new Account();
 acc = acc.fromKey(v4, PASS, true);
 
-neb.api.getAccountState(MY_ADDRESS).then(function (state) {
-    console.log(state);
-}).catch(function (err) {
-    console.log(err);
-});
+// neb.api.getAccountState(MY_ADDRESS).then(function (state) {
+//     console.log(state);
+//     const contract = {};
+//     submitContract(contract, state.nonce)
+// }).catch(function (err) {
+//     console.log(err);
+// });
 
 AWS.config.update(
     {
@@ -297,7 +299,7 @@ if (cluster.isMaster) {
         console.log(contract, nonce);
         const Transaction = Nebulas.Transaction;
         const tx = new Transaction({
-            chainID: 1,
+            chainID: 1001,// 1,
             from: acc,
             to: CONTRACT_ADDRESS,
             value: 0,
