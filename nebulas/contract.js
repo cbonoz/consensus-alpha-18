@@ -48,14 +48,14 @@ ContractItem.prototype = {
 };
 
 const ContractRepository = function () {
-    LocalContractStorage.defineMapProperty(this, "repo", {
-        parse: function (text) {
-            return new ContractItem(text);
-        },
-        stringify: function (o) {
-            return o.toString();
-        }
-    });
+    // LocalContractStorage.defineMapProperty(this, "repo", {
+    //     parse: function (text) {
+    //         return new ContractItem(text);
+    //     },
+    //     stringify: function (o) {
+    //         return o.toString();
+    //     }
+    // });
 };
 
 ContractRepository.prototype = {
