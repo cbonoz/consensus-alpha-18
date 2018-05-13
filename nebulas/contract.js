@@ -13,22 +13,24 @@ neb.setRequest(new Nebulas.HttpRequest("https://testnet.nebulas.io"));
 
 // Created by the client application.
 // {
-// "symbol": XXXX, // commodity symbol
-// "participants":[], // addresses of the participants
-// "amounts": [], // bet amounts
-// "sides": [], //
-// "expirationDate": XXXX,
-// "creationDate": XXXX
+// "symbol": "CRDUSD, // commodity symbol.
+// "endPrice": $55.00, // end price.
+// "participants":[XXXX, ...], // addresses of the participants (use index for corresponding amount and side).
+// "amounts": [1.00, ...], // bet amounts in NAS
+// "sides": [1, ...], // 1 if above, 0 if below
+// "expirationDate": XXXX // timestamp when the price will be checked.
 // }
 const ContractItem = function (text, from) {
     const obj = JSON.parse(text);
-    this.createdBy = from;
     this.symbol = obj.symbol;
+    this.endPrice = obj.endPrice;
     this.participants = obj.participants; // addresses of the participants
     this.amounts = obj.amounts; // bet amounts
     this.sides = obj.sides; //
     this.expirationDate = obj.expirationDate;
-    this.creationDate = obj.creationDate;
+
+    this.createdBy = from;
+    this.creationDate = new Date().getTime();
 };
 
 // Created by the server.

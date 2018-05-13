@@ -22,6 +22,27 @@ const _ = require('lodash');
 const redis = require('redis');
 const WebSocket = require('ws');
 
+const Nebulas = require("./neb.js/index");
+const Account = Nebulas.Account;
+const Neb = Nebulas.Neb;
+const neb = new Neb();
+neb.setRequest(new Nebulas.HttpRequest("https://testnet.nebulas.io"));
+
+const PASS = process.env.NEB_WALLET || 'testing123';
+const CONTRACT_ADDRESS = "";
+
+const MY_ADDRESS = "n1WJ8UCirPdMmLMYiuemHuUp9xftqkunQCu";
+const v4 = JSON.parse(fs.readFileSync(`./${MY_ADDRESS}.json`));
+console.log(v4);
+let acc = new Account();
+acc = acc.fromKey(v4, PASS, true);
+
+neb.api.getAccountState(MY_ADDRESS).then(function (state) {
+    console.log(state);
+}).catch(function (err) {
+    console.log(err);
+});
+
 AWS.config.update(
     {
         region: config.get('AWS.region')
@@ -93,11 +114,11 @@ if (cluster.isMaster) {
 
     fs.readdirSync(tmpDir).forEach((file) => {
         const file_path = tmpDir + path.sep + file
-        if (fs.lstatSync(file_path).isDirectory() && file.includes("behold-api-")){
-        rimraf.sync(file_path);
-        logger.debug('Removed temporary directory 🗑️	:' + file_path);
-    }
-})
+        if (fs.lstatSync(file_path).isDirectory() && file.includes("behold-api-")) {
+            rimraf.sync(file_path);
+            logger.debug('Removed temporary directory 🗑️	:' + file_path);
+        }
+    })
 
     const upload_dir = fs.mkdtempSync(tmpDir + path.sep + 'behold-api-');
     const process_env = {
@@ -121,9 +142,9 @@ if (cluster.isMaster) {
         cluster.fork(process_env);
     });
 
-    cluster.on('online', (worker) = > {
+    cluster.on('online', (worker) => {
         logger.debug('Started PID ⚡	: ' + worker.process.pid);
-})
+    })
 
     wss.on('open', function connection() {
         console.log("Connected!")
@@ -265,6 +286,57 @@ if (cluster.isMaster) {
 
     var case_route = require('./routes/case');
     app.get('/SubscribeTrades', case_route.SubscribeTrades);
+
+    neb.api.getAccountState(MY_ADDRESS).then(function (state) {
+        console.log(state);
+    }).catch(function (err) {
+        console.log(err);
+    });
+
+    function submitContract(contract, nonce) {
+        const Transaction = Nebulas.Transaction;
+        const tx = new Transaction({
+            chainID: 1,
+            from: acc,
+            to: CONTRACT_ADDRESS,
+            value: 0,
+            nonce: parseInt(nonce) + 1,
+            gasPrice: 1000000,
+            gasLimit: 2000000,
+            contract: {
+                function: "saveContract",
+                args: `[${JSON.stringify(contract)}]`
+            }
+        });
+
+        tx.signTransaction();
+        const txHash = tx.hash.toString("hex");
+        console.log("hash:" + txHash);
+        console.log("sign:" + tx.sign.toString("hex"));
+        console.log(tx.toString());
+        const data = tx.toProtoString();
+        console.log(data);
+        tx.fromProto(data);
+        console.log(tx.toString());
+        console.log("address:" + tx.from.getAddressString());
+        return txHash;
+    }
+
+    app.post('/Contract', function (req, res, next) {
+        const body = req.body;
+        const contract = body.contract;
+        // https://nebula
+        // sio.github.io/neb.js/Transaction.html
+
+        neb.api.getAccountState(MY_ADDRESS).then(function (state) {
+            const txHash = submitContract(contract, state.nonce);
+            console.log(state);
+        }).catch(function (err) {
+            console.log(err);
+        });
+
+        return res.status(200).json({tx: txHash, success: 1});
+    });
 
     app.use(function (req, res, next) {
         res.status(404);

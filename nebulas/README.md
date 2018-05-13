@@ -5,19 +5,17 @@ testing123
 
 #### Contract interface
 
+The smart contract for a particular commodity future on Liquidity looks
+like the following. Submit a post request to `/Contract` with this body.
 <pre>
-
 {
-    "id": XXXX,
-    "commodity_symbol": XXXX,
-    "participants":[], // addresses of the participants
-    "amounts": [], // bet amounts
-    "sides": [], // 
-    "expiration_date": XXXX,
-    "creation_date": XXXX
+    "symbol": "CRDUSD, // commodity symbol.
+    "endPrice": $55.00, // end price.
+    "participants":[XXXX, ...], // addresses of the participants (use index for corresponding amount and side).
+    "amounts": [1.00, ...], // bet amounts in NAS
+    "sides": [1, ...], // 1 if above, 0 if below
+    "expirationDate": XXXX // timestamp when the price will be checked.
 }
-
-
 </pre>
 
 #### Useful Links
