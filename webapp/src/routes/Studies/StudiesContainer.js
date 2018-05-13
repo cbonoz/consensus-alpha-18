@@ -3,9 +3,13 @@ const querystring = require('querystring');
 import leftPad from 'left-pad';
 import uid from 'node-uuid';
 import numeral from 'numeral';
+import deepAssign from 'assign-deep';
 import TimeAgo from 'javascript-time-ago';
 import en from 'javascript-time-ago/locale/en'
+import classNames from 'classnames';
 TimeAgo.locale(en)
+import createAutoCorrectedDatePipe from 'text-mask-addons/dist/createAutoCorrectedDatePipe';
+import createNumberMask from 'text-mask-addons/dist/createNumberMask';
 
 import { Colors } from 'consts';
 import {
@@ -16,15 +20,26 @@ import {
 		Panel,
 		Button,
 		Form,
+		Media,
 		FormGroup,
 		FormControl,
 		InputGroup,
+		Modal,
+		ControlLabel,
+		OverlayTrigger,
+		Popover,
+		Tooltip,
+		MaskedTextInput,
 		Charts
 } from 'components';
+
+import eCommerceData from 'consts/data/e-commerce.json';
 
 import { RoutedComponent, connect } from 'routes/routedComponent';
 import renderSection from 'modules/sectionRender';
 import treeRandomizer from 'modules/treeRandomizer';
+const autoCorrectedDatePipe = createAutoCorrectedDatePipe('mm/dd/yyyy');
+const dolarsMaskDecimal = createNumberMask({ prefix: '$', allowDecimal: true });
 
 import {
     CONTENT_VIEW_STATIC,
@@ -109,6 +124,15 @@ const renderSummary = function(trades) {
 	                </p>
 	            </Col>
 							{/*
+								<Col md={ 2 } sm={ 8 } xs={ 7 }>
+ 									 <Divider>
+ 											 24h Volume
+ 									 </Divider>
+ 									 <p className={classes.summaryLargeValue}>
+ 											 {summaryData.Volume}
+ 											 <small> USD</small>
+ 									 </p>
+ 							 </Col>
 								<Col md={ 2 } sm={ 4 } xs={ 5 }>
 									 <Divider>
 											 Today's Open
@@ -118,19 +142,7 @@ const renderSummary = function(trades) {
 											 <small> USD</small>
 									 </p>
 							 </Col>
-
-							 <Col md={ 2 } sm={ 8 } xs={ 7 }>
-									 <Divider>
-											 24h Volume
-									 </Divider>
-									 <p className={classes.summaryLargeValue}>
-											 {summaryData.Volume}
-											 <small> USD</small>
-									 </p>
-							 </Col>
-								*/}
-
-
+							 */}
 	        </Row>
 	        <Row className={ classes.overall }>
 	            <Col md={ 5 } sm={ 6 } xs={ 12 } className='text-center'>
@@ -212,37 +224,36 @@ const generateOrdersData = (count) => {
 const renderExchangePanel = () => (
     <Panel className={ classes.exchangePanel }>
 			<Row>
-				<Col lg={ 4 }>
-        <Form inline>
-            <FormGroup>
-                <span className={`${classes.exchangePanelTitle} visible-lg-inline`}>
-                    Buy or Sell
-                </span>
+				<Col lg={ 3 }>
+	        <Form inline>
+	            <FormGroup>
+	                <span className={`${classes.exchangePanelTitle} visible-lg-inline`}>
+	                    Buy or Sell
+	                </span>
 
-                <InputGroup className={ classes.exchangeInput }>
-                    <InputGroup.Addon>
-                        <i className="fa fa-fw fa-bitcoin"></i>
-                    </InputGroup.Addon>
-                    <FormControl type="number" placeholder="0.00"/>
-                    <InputGroup.Addon>
-                        Amount
-                    </InputGroup.Addon>
-                </InputGroup>
+	                <InputGroup className={ classes.exchangeInput }>
+	                    <InputGroup.Addon>
+	                        <i className="fa fa-fw fa-bitcoin"></i>
+	                    </InputGroup.Addon>
+	                    <FormControl type="number" placeholder="0.00"/>
+	                    <InputGroup.Addon>
+	                        Amount
+	                    </InputGroup.Addon>
+	                </InputGroup>
 
-                <InputGroup className={ classes.exchangeInput }>
-                    <InputGroup.Addon>
-                        <i className="fa fa-fw fa-dollar"></i>
-                    </InputGroup.Addon>
-                    <FormControl type="number" placeholder="0.00"/>
-                    <InputGroup.Addon>
-                        Price USD
-                    </InputGroup.Addon>
-                </InputGroup>
-            </FormGroup>
-
-        </Form>
+	                <InputGroup className={ classes.exchangeInput }>
+	                    <InputGroup.Addon>
+	                        <i className="fa fa-fw fa-dollar"></i>
+	                    </InputGroup.Addon>
+	                    <FormControl type="number" placeholder="0.00"/>
+	                    <InputGroup.Addon>
+	                        Price USD
+	                    </InputGroup.Addon>
+	                </InputGroup>
+	            </FormGroup>
+	        </Form>
 				</Col>
-				<Col lg={ 4 }>
+				<Col lg={ 3 }>
 					<div className={ classes.exchangeActions }>
 							<Button
 									bsStyle='primary'
@@ -257,7 +268,7 @@ const renderExchangePanel = () => (
 									<i className='fa fa-fw fa-upload'></i>Sell CRD
 							</Button>
 					</div>
-				<Col}>
+				</Col>
 			</Row>
     </Panel>
 );
@@ -309,6 +320,83 @@ const getChartConfig = (state) => ({
         }
     }]
 });
+
+const renderMostViewedItems = (mostViewed) => {
+    const getQuantityStatusClass = (quantity) => {
+        return classNames('fa', 'fa-circle', classes.mostViewedItemStatus, {
+            [`${classes.mostViewedItemStatusSuccess}`]: quantity > 100,
+            [`${classes.mostViewedItemStatusWarning}`]: (quantity <= 100 && quantity > 10),
+            [`${classes.mostViewedItemStatusDanger}`]: quantity <= 10,
+        });
+    };
+
+    const renderMostViewedItem = (item) => (
+        <tr key={uid.v4()}>
+            <td>
+                <Media>
+                    <Media.Left>
+                        <a href='javascript:void(0)'>
+                            <span className="fa-stack fa-lg">
+                              <i className="fa fa-square fa-stack-2x text-gray-light"></i>
+                              <i className="fa fa-shopping-basket fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </Media.Left>
+                    <Media.Body className={ classes.mediaFix }>
+                        <Media.Heading componentClass='div'>
+                            <span className='text-white'>
+                                { item.name }
+                            </span>
+                            <br />
+                            <span>
+                                IDR { item.price }
+                            </span>
+                        </Media.Heading>
+                    </Media.Body>
+                </Media>
+            </td>
+            <td>
+                <span className='text-white'>
+                    { item.viewCount }
+                    <br/>
+                    Views
+                </span>
+            </td>
+            <td>
+                <i className={ getQuantityStatusClass(item.countLeft) }></i>
+                <span className='text-white'>{ item.countLeft }</span> Items Left
+            </td>
+        </tr>
+    );
+
+    return (
+        <div className={ classes.mostViewedItems }>
+            <div className={ classes.boxHeader }>
+                <h5 className={ classes.boxHeaderTitle }>
+                    Active Markets
+                </h5>
+            </div>
+            <Table className={ classes.mostViewedItemsTable }>
+                <thead>
+                    <tr>
+                        <th>
+                            <strong>Name</strong>
+                        </th>
+                        <th>
+                            <strong>Price</strong>
+                        </th>
+                        <th>
+                            <strong>Status</strong>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    { _.map(mostViewed, (item) => renderMostViewedItem(item)) }
+                </tbody>
+            </Table>
+        </div>
+    )
+}
 
 const renderOrders = (orders) => {
 	const timeAgo = new TimeAgo('en-US')
@@ -394,6 +482,12 @@ const renderOrders = (orders) => {
 class StudiesContainer extends RoutedComponent {
     constructor(props, context) {
         super(props, context);
+				const temp_state = deepAssign({}, {
+	            Report: {
+	                selected: 'Revenue'
+	            }
+	        }, getData(eCommerceData));
+
 				this.state = Object.assign({}, {
             chartData: getChartData(highStockData)
         }, getData(tradeData), {
@@ -402,7 +496,14 @@ class StudiesContainer extends RoutedComponent {
                 Sell: generateOrdersData(16),
                 All: generateOrdersData(16)
             }
-        });
+        }, {
+					show_modal : false
+				}, temp_state
+			);
+
+			this.createPrediction = this.createPrediction.bind(this);
+
+
     }
 
 		componentWillMount(prevProps) {
@@ -424,9 +525,24 @@ class StudiesContainer extends RoutedComponent {
 			dispatch(selectStudyList(params["status"]))
 		}
 
+		createPrediction() {
+			const url = ""
+			fetch(url, {
+	      method: 'GET',
+	      headers: {
+	        'Accept': 'application/json',
+	        'Content-Type': 'application/json'
+	      }
+	    }).then((response) => response.json()).then((res_json) => {
+				console.log("createPrediction")
+			}).catch(function(error) {
+	      console.error(error)
+	    })
+		}
+
     render() {
 			const { history, location, params, study_lists, trades } = this.props;
-			console.log(this.props)
+			const {MostViewedItems} = this.state;
 			const status = [
 			    { title: 'Crude Oil (CRLUSD)', label : "all"},
 			    { title: 'Crude Oil (CRLBTC)', label : "all"},
@@ -441,6 +557,7 @@ class StudiesContainer extends RoutedComponent {
 					_status["count"] = study_lists[_status.label].total_count
 				}
 			})
+
 
 			const labels = [
 			    { title: 'Pneumonia', color: Colors.brandPrimary },
@@ -489,9 +606,93 @@ class StudiesContainer extends RoutedComponent {
 									<Row>
 										{ renderSection(renderOrders, trades) }
 									</Row>
+									<Row>
+									<div>
+											<Row className={ classes.summary }>
+													<Col md={ 4 } sm={ 4 } xs={ 5 }>
+															<Divider>
+																	Prediction Markets
+															</Divider>
+															<div className={ classes.exchangeActions }>
+																	<Button
+																			bsStyle='info'
+																			onClick={ () => this.setState({
+																					show_modal: true
+																			})}
+																			className={ classes.exchangeAction }
+																	>
+																			<i className='fa fa-fw fa-group'></i>Create Bet
+																	</Button>
+															</div>
+													</Col>
+											</Row>
+											<Modal
+													show={this.state.show_modal }
+													onHide={ () => this.setState({
+															show_modal: false
+													})}
+											>
+													<Modal.Header>
+															<Modal.Title>Create Prediction in Market</Modal.Title>
+													</Modal.Header>
+
+													<Modal.Body>
+															<h4>Contract Expiration Date</h4>
+															<FormGroup controlId='maskedInputDateAutoCorrected'>
+					                        <ControlLabel>Date (Auto-Corrected)</ControlLabel>
+					                        <MaskedTextInput
+					                            mask={ [/\d/, /\d/, '/', /\d/, /\d/, '/', /\d/, /\d/, /\d/, /\d/] }
+					                            keepCharPositions={ true }
+					                            pipe={ autoCorrectedDatePipe }
+					                            placeholder='Please Enter a Date'
+					                        />
+					                    </FormGroup>
+															<h4>Order or Wager/Bet Amount</h4>
+															<FormGroup controlId='maskedInputDate'>
+																	<ControlLabel>NAS dollar amount (allows decimal)</ControlLabel>
+																	<MaskedTextInput
+																			mask={ dolarsMaskDecimal }
+																			className='text-right'
+																			placeholder='Enter an amount'
+																	/>
+															</FormGroup>
+															<h4>Predicted Price of Commodity</h4>
+															<FormGroup controlId='maskedInputDate'>
+																	<ControlLabel>US dollar amount (allows decimal)</ControlLabel>
+																	<MaskedTextInput
+																			mask={ dolarsMaskDecimal }
+																			className='text-right'
+																			placeholder='Enter an amount'
+																	/>
+															</FormGroup>
+															<h4>Commodity Symbol</h4>
+															<FormGroup controlId='maskedInputDate'>
+																	<ControlLabel>Alpha Point Commodity Futures Symbol</ControlLabel>
+																	<MaskedTextInput
+																			mask={ dolarsMaskDecimal }
+																			className='text-right'
+																			placeholder='Enter an Symbol'
+																	/>
+															</FormGroup>
+													</Modal.Body>
+
+													<Modal.Footer>
+															<Button onClick={ () => this.setState({
+																	show_modal: false
+															})}>Close</Button>
+															<Button bsStyle="primary" onClick={this.createPrediction}>Submit</Button>
+													</Modal.Footer>
+											</Modal>
+
+									</div>
+									</Row>
+									<Row>
+										{ renderSection(renderMostViewedItems, this.state.MostViewedItems) }
+									</Row>
 
 								</Col>
               </Row>
+
           </div>
       );
     }
