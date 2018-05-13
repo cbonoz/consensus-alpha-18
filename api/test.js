@@ -28,7 +28,8 @@ function submitContract(contract, nonce) {
         gasLimit: 2000000,
         contract: {
             function: "saveItem",
-            args: `['${JSON.stringify(contract)}']`
+            // args: `['${JSON.stringify(contract)}']`
+            args: `[{}]`
         }
     });
 
