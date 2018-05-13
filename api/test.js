@@ -13,7 +13,8 @@ api.getTransactionReceipt({hash: "cc7133643a9ae90ec9fa222871b85349ccb6f04452b835
 //code
 });
 
-const contractAddress = "n21HfxpxAx3usVXHUGygo6J9XPxFZJCN5uJ";
+// const contractAddress = "n21HfxpxAx3usVXHUGygo6J9XPxFZJCN5uJ";
+const contractAddress = "n1kHJ1LHZyCMZnz2CACtA9wcEVU7FFCzKrr";
 
 function submitContract(contract, nonce) {
     console.log(contract, nonce);
@@ -29,7 +30,7 @@ function submitContract(contract, nonce) {
         contract: {
             function: "saveItem",
             // args: `['${JSON.stringify(contract)}']`
-            args: `[{}]`
+            args: `[0]`
         }
     });
 
@@ -39,7 +40,7 @@ function submitContract(contract, nonce) {
     console.log("sign:" + tx.sign.toString("hex"));
     console.log('proto', tx.toProtoString());
     api.sendRawTransaction( {data: tx.toProtoString()} ).then(function(hash) {
-        console.log(hash);
+        console.log('returned hash', hash);
         return hash;
     });
 }
