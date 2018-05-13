@@ -329,8 +329,6 @@ if (cluster.isMaster) {
                 console.log(state);
                 return res.status(200).json({tx: txHash, success: 1});
             });
-
-            return res.status(200).json({tx: hash, success: 1});
         }).catch(function (err) {
             console.log(err);
             return res.status(500).json(err);
