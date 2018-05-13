@@ -20,7 +20,9 @@ like the following. Submit a post request to `/Contract` with this body.
 
 #### To view smart contract code:
 
-open `web-wallet/index.html`
+* open `web-wallet/index.html`
+* go to contract or check tx status.
+
 
 Contract deployed:
 tx hash: 9152ea8a20dd3bf4fb1ce7253a9b528cc9babbf3e9c05b09b9d236cf190ab4e8
