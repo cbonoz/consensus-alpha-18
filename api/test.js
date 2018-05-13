@@ -8,6 +8,11 @@ const Account = nebulas.Account;
 const neb = new nebulas.Neb();
 neb.setRequest(new nebulas.HttpRequest("https://testnet.nebulas.io"));
 
+const api = neb.api;
+api.getTransactionReceipt({hash: "cc7133643a9ae90ec9fa222871b85349ccb6f04452b835851280285ed72b008c"}).then(function(receipt) {
+//code
+});
+
 const contractAddress = "n21HfxpxAx3usVXHUGygo6J9XPxFZJCN5uJ";
 
 function submitContract(contract, nonce) {
@@ -23,7 +28,7 @@ function submitContract(contract, nonce) {
         gasLimit: 2000000,
         contract: {
             function: "saveItem",
-            args: `[${JSON.stringify(contract)}]`
+            args: `['${JSON.stringify(contract)}']`
         }
     });
 
@@ -31,8 +36,11 @@ function submitContract(contract, nonce) {
     const txHash = tx.hash.toString("hex");
     console.log("hash:" + txHash);
     console.log("sign:" + tx.sign.toString("hex"));
-    console.log(tx.toString());
-    return txHash;
+    console.log('proto', tx.toProtoString());
+    api.sendRawTransaction( {data: tx.toProtoString()} ).then(function(hash) {
+        console.log(hash);
+        return hash;
+    });
 }
 
 const PASS = process.env.NEB_WALLET || 'testing123';
@@ -46,7 +54,7 @@ acc = acc.fromKey(v4, PASS, true);
 
 neb.api.getAccountState(MY_ADDRESS).then(function (state) {
     console.log(state);
-    const contract = {};
+    const contract = {'symbol': "hi"};
     const hash = submitContract(contract, state.nonce);
     console.log('hash', hash);
 }).catch(function (err) {
