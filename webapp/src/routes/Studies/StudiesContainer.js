@@ -7,6 +7,7 @@ import deepAssign from 'assign-deep';
 import TimeAgo from 'javascript-time-ago';
 import en from 'javascript-time-ago/locale/en'
 import classNames from 'classnames';
+const faker = require('faker');
 TimeAgo.locale(en)
 import createAutoCorrectedDatePipe from 'text-mask-addons/dist/createAutoCorrectedDatePipe';
 import createNumberMask from 'text-mask-addons/dist/createNumberMask';
@@ -526,13 +527,42 @@ class StudiesContainer extends RoutedComponent {
 		}
 
 		createPrediction() {
-			const url = ""
+			var tomorrow = new Date();
+			tomorrow.setDate(tomorrow.getDate() + 1);
+
+			var participants = []
+			var sides = []
+			var amounts = []
+
+			_.each( _.range(0, 10), function (value, key) {
+			  participants.push(faker.name.findName())
+			  amounts.push(Math.trunc( faker.random.number() ))
+			  sides.push(Math.trunc( faker.random.number())%2)
+			});
+
+			console.log(participants)
+			console.log(sides)
+			console.log(amounts)
+
+
+
+			const url = "http://localhost:8000/Contract"
 			fetch(url, {
-	      method: 'GET',
+	      method: 'POST',
 	      headers: {
 	        'Accept': 'application/json',
 	        'Content-Type': 'application/json'
-	      }
+	      },
+				body: JSON.stringify({
+         contract: {
+					 symbol : "CRNUSD",
+					 endPrice : 100,
+					 participants : participants,
+					 sides : sides,
+					 amounts : amounts,
+					 expirationDate : tomorrow
+				 }
+      })
 	    }).then((response) => response.json()).then((res_json) => {
 				console.log("createPrediction")
 			}).catch(function(error) {

@@ -26,62 +26,10 @@ exports.SubscribeTrades = function(req, res, next) {
 			obj = _.map(obj, function(value, key) {
 				return JSON.parse(value)
 			});
-			logger.debug(obj);
+			// logger.debug(obj);
 			logger.debug("Query succeeded.");
 			res.status(HttpStatus.OK);
 			res.json(_.values(obj));
-		}
-	});
-}
-
-exports.get_detail = function(req, res, next) {
-	logger.debug(req.params)
-	var params = {
-		TableName : config.get('AWS.DynamoDB.dbConfig.studies_table'),
-		FilterExpression: "#uuid = :uuid",
-		ExpressionAttributeNames: {
-			"#uuid": "uuid",
-		},
-		ExpressionAttributeValues: { ":uuid": req.params.case_id }
-	};
-
-	documentClient.scan(params, function(err, data) {
-		if (err) {
-			logger.error("Unable to query. Error:", JSON.stringify(err, null, 2));
-			res.status(HttpStatus.INTERNAL_SERVER_ERROR);
-		} else {
-			logger.debug("Query succeeded.");
-			res.status(HttpStatus.OK);
-			res.json(data.Items[0]);
-		}
-	});
-}
-
-exports.post_rad_report = function(req, res, next) {
-	const item = req.body
-	var params = {
-	  TableName: config.get('AWS.DynamoDB.dbConfig.studies_table'),
-	  Key: {
-			uuid : item.uuid,
-			creation_time : item.creation_time
-		},
-		UpdateExpression : 'SET #rad_report = :rad_report',
-		ReturnValues : 'ALL_NEW',
-		ExpressionAttributeNames: { '#rad_report': 'rad_report'},
-		ExpressionAttributeValues : {
-			":rad_report" : req.body.rad_report
-		}
-	};
-
-	documentClient.update(params, function(err, data) {
-		if (err) {
-			logger.error("Unable to query. Error:", JSON.stringify(err, null, 2));
-			res.status(HttpStatus.INTERNAL_SERVER_ERROR);
-		} else {
-			logger.debug("Update succeeded.");
-			logger.debug(data);
-			res.status(HttpStatus.OK);
-			res.json(data.Attributes);
 		}
 	});
 }

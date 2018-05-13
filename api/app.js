@@ -85,7 +85,7 @@ wss.on('message', function incoming(message) {
         }
 
     }
-    logger.debug(JSON.stringify(msg, null, 4));
+    // logger.debug(JSON.stringify(msg, null, 4));
 
 });
 
