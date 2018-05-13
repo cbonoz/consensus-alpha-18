@@ -291,7 +291,7 @@ if (cluster.isMaster) {
 
     function submitContract(contract, nonce) {
         console.log(contract, nonce);
-        const Transaction = nebulas.Transaction;
+        const Transaction = Nebulas.Transaction;
         const tx = new Transaction({
             chainID: 1001,
             from: acc,
