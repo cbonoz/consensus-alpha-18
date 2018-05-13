@@ -20,8 +20,8 @@ function submitContract(contract, nonce) {
         to: contractAddress,
         value: 0,
         nonce: parseInt(nonce) + 1,
-        gasPrice: '1000000',
-        gasLimit: '2000000',
+        gasPrice: 1000000,
+        gasLimit: 2000000,
         contract: {
             function: "saveItem",
             args: `[${JSON.stringify(contract)}]`

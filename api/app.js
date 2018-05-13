@@ -289,12 +289,6 @@ if (cluster.isMaster) {
     var case_route = require('./routes/case');
     app.get('/SubscribeTrades', case_route.SubscribeTrades);
 
-    neb.api.getAccountState(MY_ADDRESS).then(function (state) {
-        console.log(state);
-    }).catch(function (err) {
-        console.log(err);
-    });
-
     function submitContract(contract, nonce) {
         console.log(contract, nonce);
         const Transaction = Nebulas.Transaction;
