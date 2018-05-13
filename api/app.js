@@ -294,6 +294,7 @@ if (cluster.isMaster) {
     });
 
     function submitContract(contract, nonce) {
+        console.log(contract, nonce);
         const Transaction = Nebulas.Transaction;
         const tx = new Transaction({
             chainID: 1,
@@ -331,11 +332,12 @@ if (cluster.isMaster) {
         neb.api.getAccountState(MY_ADDRESS).then(function (state) {
             const txHash = submitContract(contract, state.nonce);
             console.log(state);
+            return res.status(200).json({tx: txHash, success: 1});
         }).catch(function (err) {
             console.log(err);
+            return res.status(500).json(err);
         });
 
-        return res.status(200).json({tx: txHash, success: 1});
     });
 
     app.use(function (req, res, next) {
