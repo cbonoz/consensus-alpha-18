@@ -31,7 +31,7 @@ neb.setRequest(new Nebulas.HttpRequest("https://testnet.nebulas.io"));
 const api = neb.api;
 
 const PASS = process.env.NEB_WALLET || 'testing123';
-const CONTRACT_ADDRESS = "n21HfxpxAx3usVXHUGygo6J9XPxFZJCN5uJ";
+const contractAddress = "n21HfxpxAx3usVXHUGygo6J9XPxFZJCN5uJ";
 
 const MY_ADDRESS = "n1WJ8UCirPdMmLMYiuemHuUp9xftqkunQCu";
 const v4 = JSON.parse(fs.readFileSync(`./${MY_ADDRESS}.json`));
@@ -292,6 +292,7 @@ if (cluster.isMaster) {
     app.get('/SubscribeTrades', case_route.SubscribeTrades);
 
     function submitContract(contract, nonce, cb) {
+        // args: `[${JSON.stringify(contract)}]`
         console.log(contract, nonce);
         const Transaction = Nebulas.Transaction;
         const tx = new Transaction({
@@ -304,7 +305,7 @@ if (cluster.isMaster) {
             gasLimit: 2000000,
             contract: {
                 function: "saveItem",
-                args: `[${JSON.stringify(contract)}]`
+                args: `[{symbol: 'CRDUSD'}]`
             }
         });
 
