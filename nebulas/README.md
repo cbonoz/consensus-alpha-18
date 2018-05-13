@@ -20,7 +20,7 @@ like the following. Submit a post request to `/Contract` with this body.
 
 #### To view smart contract code:
 
-* open `web-wallet/index.html`
+* open `webwallet/index.html`
 * go to contract or check tx status.
 
 
