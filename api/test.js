@@ -3,17 +3,16 @@
  */
 const fs = require('fs');
 
-const Nebulas = require("./neb.js/index");
-const Account = Nebulas.Account;
-const Neb = Nebulas.Neb;
-const neb = new Neb();
-neb.setRequest(new Nebulas.HttpRequest("https://testnet.nebulas.io"));
+const nebulas = require('./neb.js/index');
+const Account = nebulas.Account;
+const neb = new nebulas.Neb();
+neb.setRequest(new nebulas.HttpRequest("https://testnet.nebulas.io"));
 
 const contractAddress = "n21HfxpxAx3usVXHUGygo6J9XPxFZJCN5uJ";
 
 function submitContract(contract, nonce) {
     console.log(contract, nonce);
-    const Transaction = Nebulas.Transaction;
+    const Transaction = nebulas.Transaction;
     const tx = new Transaction({
         chainID: 1001,
         from: acc,
@@ -33,11 +32,6 @@ function submitContract(contract, nonce) {
     console.log("hash:" + txHash);
     console.log("sign:" + tx.sign.toString("hex"));
     console.log(tx.toString());
-    const data = tx.toProtoString();
-    console.log(data);
-    tx.fromProto(data);
-    console.log(tx.toString());
-    console.log("address:" + tx.from.getAddressString());
     return txHash;
 }
 
