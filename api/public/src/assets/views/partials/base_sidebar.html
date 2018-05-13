@@ -1,0 +1,44 @@
+<!-- Sidebar Scroll Container -->
+<div id="sidebar-scroll">
+  <!-- Sidebar Content -->
+  <!-- Adding .sidebar-mini-hide to an element will hide it when the sidebar is in mini mode -->
+  <div class="sidebar-content">
+    <!-- Side Header -->
+    <div class="side-header side-content bg-white-op">
+      <button class="btn btn-link text-gray pull-right hidden-md hidden-lg" type="button" data-ng-click="oneui.settings.sidebarOpenXs = false" data-js-blur>
+      <i class="fa fa-times"></i>
+      </button>
+      <div class="btn-group pull-right" data-on-toggle="toggled(open)" data-uib-dropdown>
+        <button class="btn btn-link text-gray" type="button" data-uib-dropdown-toggle>
+          <img width="64"  src="https://s3.amazonaws.com/behold-cloudfront-bucket/web-content/images/logo_top_left.png" alt="BeholdAI Logo">
+        </button>
+      </div>
+      <a class="h5 text-white" data-ui-sref="dashboard" data-js-blur>
+      <span class="h4 font-w600 sidebar-mini-hide">Behold AI</span>
+      </a>
+    </div>
+    <!-- END Side Header -->
+    <!-- Side Content -->
+    <div class="side-content">
+      <!-- Main navigation functionality (data-js-main-nav attribute is initialized in js/directives.js) -->
+      <ul class="nav-main" data-js-main-nav>
+        <li>
+          <a data-ui-sref="angularjs" data-ui-sref-active="active">
+          <i class="si si-home"></i><span class="sidebar-mini-hide">Home</span>
+          </a>
+        </li>
+        <li data-ng-class="{open: (path.indexOf('/components/') > -1)}">
+          <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-wrench"></i><span class="sidebar-mini-hide">API</span></a>
+          <ul>
+            <li>
+              <a data-ui-sref="compSyntaxHighlighting" data-ui-sref-active="active"> <i class="si si-rocket"></i> QuickStart</a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <!-- END Side Content -->
+  </div>
+  <!-- Sidebar Content -->
+</div>
+<!-- END Sidebar Scroll Container -->
